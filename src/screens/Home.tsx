@@ -1,6 +1,17 @@
 import React, { CSSProperties } from 'react';
 import { Button } from 'antd';
 
+import { Form, Input, Checkbox } from 'antd';
+
+const layout = {
+  labelCol: { span: 8 },
+  wrapperCol: { span: 16 },
+};
+
+const tailLayout = {
+  wrapperCol: { offset: 8, span: 16 },
+};
+
 // Styles
 const gridContainer = {
   width: "80VW",
@@ -26,7 +37,8 @@ const headerStyle = {
 
 const nameStyle = {
   gridArea: "name",
-  border: "3px solid black"
+  // border: "3px solid black",
+  justifySelf: "center"
 }
 
 const lobbyStyle = {
@@ -36,12 +48,50 @@ const lobbyStyle = {
   justifySelf: "center"
 } as CSSProperties
 
+
+const onFinish = (values: any) => {
+  console.log('Success:', values);
+};
+
+const onFinishFailed = (errorInfo: any) => {
+  console.log('Failed:', errorInfo);
+};
+
+
 export default function Home() {
   return (
     <div style={gridContainer}>
+
+      {/* HEADING */}
       <h1 style={headerStyle}>Welcome to Multi-Player Jeopardy</h1>
 
-      <Button type="primary" style={lobbyStyle}>Enter Lobby</Button>
+      {/* NAME INPUT */}
+      <div style={nameStyle}>
+        <Form
+          {...layout}
+          name="basic"
+          initialValues={{}}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed} >
+
+            <Form.Item
+              label="Username"
+              name="username"
+              rules={[{ required: true, message: 'Please input your username!' }]}>
+              <Input />
+            </Form.Item>
+
+            <br/> <br/> <br/>
+
+            <Form.Item {...tailLayout}>
+              <Button type="primary" htmlType="submit">
+                Enter Lobby
+              </Button>
+            </Form.Item>
+          </Form>
+        </div>
+
+        {/* <Button type="primary" style={lobbyStyle}>Enter Lobby</Button> */}
     </div>
   );
 }
