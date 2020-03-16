@@ -1,7 +1,9 @@
+import './App.css'
+
 import React from 'react'
 import {BrowserRouter, Route} from 'react-router-dom'
 import Home from './screens/Home'
-import './App.css'
+import Lobby from './screens/Lobby'
 
 export default function App(){
     return (
@@ -10,7 +12,7 @@ export default function App(){
 
         {/* ADD ALL PATHS FOR THE APP HERE. INCLUDING NESTED PATHS i.e /register/student */}
         <Route exact path="/" component={Home} />
-        <Route exact path="/lobby" component={Home} />
+        <Route exact path="/lobby" component={Lobby} />
         <Route exact path="/game-board" component={Home} />
         <Route exact path="/question" component={Home} />
 
