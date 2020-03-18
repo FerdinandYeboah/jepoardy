@@ -1,7 +1,7 @@
-import React, { CSSProperties } from 'react';
+import React from 'react';
 import { Button } from 'antd';
 
-import { Form, Input, Checkbox } from 'antd';
+import { Form, Input } from 'antd';
 
 const layout = {
   labelCol: { span: 8 },
@@ -40,14 +40,6 @@ const nameStyle = {
   // border: "3px solid black",
   justifySelf: "center"
 }
-
-const lobbyStyle = {
-  gridArea: "lobby",
-  // border: "3px solid blue",
-  // width: "10%", //Don't need width since justifySelf
-  justifySelf: "center"
-} as CSSProperties
-
 
 const onFinish = (values: any) => {
   console.log('Success:', values);
@@ -91,7 +83,6 @@ export default function Home() {
           </Form>
         </div>
 
-        {/* <Button type="primary" style={lobbyStyle}>Enter Lobby</Button> */}
     </div>
   );
 }
