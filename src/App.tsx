@@ -6,6 +6,7 @@ import Home from './screens/Home'
 import Lobby from './screens/Lobby'
 import CreateRoom from './screens/CreateRoom'
 import WaitingRoom from './screens/WaitingRoom'
+import GameBoard from './screens/GameBoard'
 
 export default function App(){
     return (
@@ -17,8 +18,7 @@ export default function App(){
         <Route exact path="/lobby" component={Lobby} />
         <Route exact path="/create-room" component={CreateRoom} />
         <Route exact path="/waiting-room" component={WaitingRoom} />
-        <Route exact path="/game-board" component={Home} />
-        <Route exact path="/question" component={Home} />
+        <Route exact path="/game-board" component={GameBoard} />
 
         {/* Use Link to get to the route whenever needed from anywhere */}
 
