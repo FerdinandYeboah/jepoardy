@@ -1,7 +1,7 @@
 import React, { CSSProperties } from 'react';
 import { Table } from 'antd';
 
-import { hardcodedScoreBoardColumns, hardcodedScoreBoardData, hardcodedGameBoardColumns, hardcodedGameBoardData } from '../models/hardcodedData'
+import { hardcodedScoreBoardColumns, hardcodedScoreBoardData, hardcodedGameBoardColumns, hardcodedGameBoardData } from '../models/HardcodedData'
 
 // Styles
 const gridContainer = {

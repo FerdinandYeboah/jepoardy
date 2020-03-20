@@ -7,6 +7,10 @@ import Lobby from './screens/Lobby'
 import CreateRoom from './screens/CreateRoom'
 import WaitingRoom from './screens/WaitingRoom'
 import GameBoard from './screens/GameBoard'
+import UpcomingQuestion from './components/game/UpcomingQuestion'
+import { defaultUpcoming } from './models/UpcomingQuestionModel'
+import GameQuestion from './components/game/GameQuestion'
+import { defaultGameQuestion } from './models/GameQuestionModel'
 
 export default function App(){
     return (
@@ -19,6 +23,12 @@ export default function App(){
         <Route exact path="/create-room" component={CreateRoom} />
         <Route exact path="/waiting-room" component={WaitingRoom} />
         <Route exact path="/game-board" component={GameBoard} />
+
+
+        {/* TESTING COMPONENTS that later may not have own routes */}
+        {/* <Route exact path="/upcoming-question"><UpcomingQuestion category="Default" value={200}/></Route> */}
+        <Route exact path="/upcoming-question"><UpcomingQuestion {...defaultUpcoming}/></Route>
+        <Route exact path="/game-question"><GameQuestion {...defaultGameQuestion}/></Route>
 
         {/* Use Link to get to the route whenever needed from anywhere */}
 
