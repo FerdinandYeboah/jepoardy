@@ -10,7 +10,7 @@ export function useGlobalContext() {
 }
 
 // Create Provider (React Component) for context. Will be consumed
-export function GlobalContextProvider(children) {
+export function GlobalContextProvider({children}) {
     const [socket, setSocket] = useState();
 
     //Initialization logic
@@ -19,7 +19,7 @@ export function GlobalContextProvider(children) {
         //Connect socket
         const socket = io("http://localhost:3001");
         setSocket(socket);
-        console.log("Client socket id: ", socket.id);
+        console.log("Client socket: ", socket);
 
         //Add listeners? Nah I think add listeners later in relevant child components.
 
@@ -27,10 +27,10 @@ export function GlobalContextProvider(children) {
 
     //Return back provider exposing global data and methods. Could create a socket.on/emit proxy method
     return (
-        <GlobalContextProvider value={
+        <GlobalContext.Provider value={
             socket
         }>
             {children}
-        </GlobalContextProvider>
+        </GlobalContext.Provider>
     )
 }

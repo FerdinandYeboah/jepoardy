@@ -16,8 +16,8 @@ import { GlobalContextProvider } from './context/globalContext'
 export default function App(){
     return (
 
-      // <GlobalContextProvider>
-        // {/* // Use browser router instead of router for website (as opposed to mobile app) routing. */}
+      <GlobalContextProvider>
+        {/* // Use browser router instead of router for website (as opposed to mobile app) routing. */}
         <BrowserRouter>
 
           {/* ADD ALL PATHS FOR THE APP HERE. INCLUDING NESTED PATHS i.e /register/student */}
@@ -36,6 +36,6 @@ export default function App(){
           {/* Use Link to get to the route whenever needed from anywhere */}
 
         </BrowserRouter>
-      // </GlobalContextProvider>
+      </GlobalContextProvider>
     )
 }
