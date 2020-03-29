@@ -2,6 +2,8 @@ import React from 'react';
 import { Button } from 'antd';
 
 import { Form, Input } from 'antd';
+import { useGlobalContext } from '../context/globalContext';
+import { UserJoined } from '../models/Events';
 
 const layout = {
   labelCol: { span: 8 },
@@ -41,16 +43,27 @@ const nameStyle = {
   justifySelf: "center"
 }
 
-const onFinish = (values: any) => {
-  console.log('Success:', values);
-};
-
-const onFinishFailed = (errorInfo: any) => {
-  console.log('Failed:', errorInfo);
-};
-
 
 export default function Home() {
+  const { socket } = useGlobalContext();
+
+  const onFinish = (values: any) => {
+    console.log('Success:', values);
+  
+    // Create a userJoined Event
+    const userJoined: UserJoined = {
+      name: values.username
+    }
+
+    // Convert to json and emit. Looks like I did not even have to convert to json
+    socket.emit("userJoined", userJoined);
+
+  };
+  
+  const onFinishFailed = (errorInfo: any) => {
+    console.log('Failed:', errorInfo);
+  };
+
   return (
     <div style={gridContainer}>
 

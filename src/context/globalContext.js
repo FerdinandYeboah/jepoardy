@@ -16,10 +16,13 @@ export function GlobalContextProvider({children}) {
     //Initialization logic
     useEffect(() => {
         console.log("Called useEffect");
+        
         //Connect socket
         const socket = io("http://localhost:3001");
         setSocket(socket);
         console.log("Client socket: ", socket);
+
+        //Create and expose a TypeSocket (custom) class that wraps socketio methods.
 
         //Add listeners? Nah I think add listeners later in relevant child components.
 
@@ -27,9 +30,9 @@ export function GlobalContextProvider({children}) {
 
     //Return back provider exposing global data and methods. Could create a socket.on/emit proxy method
     return (
-        <GlobalContext.Provider value={
+        <GlobalContext.Provider value={{
             socket
-        }>
+        }}>
             {children}
         </GlobalContext.Provider>
     )
