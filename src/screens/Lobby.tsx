@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Table, Button } from 'antd';
+import { useGlobalContext } from '../context/globalContext';
+import { RoomFrontendModel, RoomBackendModel } from '../models/Room';
 
 const columns = [
   {
@@ -103,6 +105,31 @@ const createRoomButtonStyle = {
 };
 
 export default function Lobby() {
+
+  const { socket } = useGlobalContext();
+  const [rooms, setRooms] = useState<RoomBackendModel[]>(); //Could change to RoomFrontendModel sometime when I create converter 
+
+  //Initialization logic, get list of rooms
+  useEffect(() => {
+    setup()
+  }, [])
+
+  function setup(){
+    console.log("Getting list of rooms...");
+
+    //Get list of rooms, need to emit and on an event?
+    socket.on("roomListResponse", setRoomList)
+
+    socket.emit("roomListRequested")
+  }
+
+  function setRoomList(data: RoomBackendModel[]){
+    console.log("Received roomListResponse: ", data)
+    
+    //Set the rooms state object
+    setRooms(data)
+  }
+
   return (
     <div style={gridContainer}>
 
