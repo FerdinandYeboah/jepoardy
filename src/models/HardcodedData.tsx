@@ -1,3 +1,7 @@
+export const lobbyListColumns = [
+
+]
+
 export const hardcodedScoreBoardColumns = [
     {
         title: 'Ferdinand',

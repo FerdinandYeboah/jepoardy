@@ -8,8 +8,31 @@ export interface RoomBackendModel {
 }
 
 export interface RoomFrontendModel {
-    question: String
-    answers: String[]
+    key: number
+    name: String | undefined
+    numPlayers: number | undefined
+    topic: String | undefined
+    status: State
+}
+
+export function convertRoomModelBE2FE (backendModel: RoomBackendModel, key: number): RoomFrontendModel {
+    let frontendModel: RoomFrontendModel = {
+        key: key,
+        name: backendModel.name,
+        numPlayers: backendModel.players.length,
+        topic: backendModel.topic,
+        status: backendModel.state
+    }
+
+    return frontendModel;
+}
+
+export function convertRoomModelListBE2FE (backendModels: RoomBackendModel[]): RoomFrontendModel[] {
+    let frontendModels = backendModels.map(function(model, index){
+        return convertRoomModelBE2FE(model, index);
+    })
+
+    return frontendModels;
 }
 
 interface Player {
@@ -18,7 +41,7 @@ interface Player {
     socket: any;
 }
 
-enum State {
+export enum State {
     LOBBY,
     GAME
 }

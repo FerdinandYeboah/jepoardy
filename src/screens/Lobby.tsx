@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { Table, Button } from 'antd';
 import { useGlobalContext } from '../context/globalContext';
-import { RoomFrontendModel, RoomBackendModel } from '../models/Room';
+import { RoomFrontendModel, RoomBackendModel, convertRoomModelListBE2FE, State } from '../models/Room';
 
 const columns = [
   {
@@ -24,17 +24,27 @@ const columns = [
     title: 'Status',
     dataIndex: 'status',
     key: 'status',
+    render: function(text: any, record: RoomFrontendModel, index: any){
+      switch(record.status) {
+        case State.GAME:
+          return "In Game"
+          break;
+        case State.LOBBY:
+          return "In Lobby"
+          break;
+      }
+    }
   },
   {
     title: 'Action',
-    render: function(text: any, record: any, index: any){
+    render: function(text: any, record: RoomFrontendModel, index: any){
       // console.log("Text: ", text, "Record: ", record, "Index: ", index)
-      if (record.status === "In Game"){
+      if (record.status === State.GAME){
         return (
           <Button>Spectate</Button>
         )
       }
-      else {
+      else if (record.status === State.LOBBY) {
         return (
           <Button type="primary">Join</Button>
         )
@@ -45,21 +55,21 @@ const columns = [
 
 const tempData = [
   {
-    key: '1',
+    key: 1,
     name: 'Ferdinand\'s room',
     numPlayers: 5,
     topic: "New Testament",
     status: "In Game",
   },
   {
-    key: '2',
+    key: 2,
     name: 'The Way',
     numPlayers: 5,
     topic: "New Testament",
     status: "In Game",
   },
   {
-    key: '3',
+    key: 3,
     name: 'LezzGo',
     numPlayers: 3,
     topic: "The Torah",
@@ -107,7 +117,7 @@ const createRoomButtonStyle = {
 export default function Lobby() {
 
   const { socket } = useGlobalContext();
-  const [rooms, setRooms] = useState<RoomBackendModel[]>(); //Could change to RoomFrontendModel sometime when I create converter 
+  const [rooms, setRooms] = useState<RoomFrontendModel[]>();
 
   //Initialization logic, get list of rooms
   useEffect(() => {
@@ -127,7 +137,8 @@ export default function Lobby() {
     console.log("Received roomListResponse: ", data)
     
     //Set the rooms state object
-    setRooms(data)
+    console.log("Converted frontend room models: ", convertRoomModelListBE2FE(data));
+    setRooms(convertRoomModelListBE2FE(data))
   }
 
   return (
@@ -138,7 +149,7 @@ export default function Lobby() {
 
       {/* ROOM TABLE */}
       <div style={roomListStyle}>
-        <Table columns={columns} dataSource={tempData}/>
+        <Table columns={columns} dataSource={rooms}/>
       </div>
 
       <div style={createRoomButtonStyle}>
