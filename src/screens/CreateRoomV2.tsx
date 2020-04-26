@@ -76,17 +76,47 @@ export default function CreateRoom() {
           </Form.Item>
 
           <Form.Item
-            label="Topic"
-            name="topic"
-            rules={[{ required: true, message: 'Please select from the available topics!' }]}>
+            label="Room Topic"
+            name="roomTopic"
+            rules={[{ required: true, message: 'Please enter room topic!' }]}>
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="User Type"
+            name="userType"
+            rules={[{ required: true, message: 'Please select your user type!' }]}>
             <Select
-              placeholder="Choose topic"
+              placeholder="Are you moderatoring or playing?"
               onChange={() => {}}
               allowClear>
-                {/* Topics/files will be read in from the server. Can use JSX function to populate List[Options] */}
-                <Option value="topic1">Topic1</Option>
-                <Option value="topic2">Topic2</Option>
+                <Option value="moderator">Moderator</Option>
+                <Option value="player">Player</Option>
             </Select>
+          </Form.Item>
+
+          <Form.Item
+            noStyle
+            shouldUpdate={(prevValues, currentValues) => prevValues.userType !== currentValues.userType}>
+
+            {
+              ({ getFieldValue }) => { 
+                return getFieldValue("userType") === "moderator" ?
+                  <Form.Item
+                    label="Game File"
+                    name="gameFile"
+                    rules={[{ required: true, message: 'Please upload file - or use UI generation (Future)' }]}>
+                      <Upload>
+                        <Button>
+                          <UploadOutlined /> Click to Upload
+                        </Button>
+                      </Upload>
+                  </Form.Item>
+                :
+                  null
+              }
+            }
+
           </Form.Item>
 
           <br/> <br/> <br/>

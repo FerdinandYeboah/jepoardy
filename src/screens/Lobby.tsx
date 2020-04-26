@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Button } from 'antd';
 import { useGlobalContext } from '../context/globalContext';
 import { RoomFrontendModel, RoomBackendModel, convertRoomModelListBE2FE, State } from '../models/Room';
+import { Redirect } from 'react-router';
 
 const columns = [
   {
@@ -118,6 +119,7 @@ export default function Lobby() {
 
   const { socket } = useGlobalContext();
   const [rooms, setRooms] = useState<RoomFrontendModel[]>();
+  const [redirectToCreateRoom, setRedirectToCreateRoom] = useState<Boolean>();
 
   //Initialization logic, get list of rooms
   useEffect(() => {
@@ -141,6 +143,15 @@ export default function Lobby() {
     setRooms(convertRoomModelListBE2FE(data))
   }
 
+  function openCreateRoom(){
+    console.log("Clicked create room")
+    setRedirectToCreateRoom(true);
+  }
+
+  if (redirectToCreateRoom){
+    return <Redirect to={"/create-room"}/>
+  }
+
   return (
     <div style={gridContainer}>
 
@@ -153,7 +164,7 @@ export default function Lobby() {
       </div>
 
       <div style={createRoomButtonStyle}>
-        <Button type="danger">Create Room</Button>
+        <Button type="danger" onClick={openCreateRoom}>Create Room</Button>
       </div>
 
     </div>
