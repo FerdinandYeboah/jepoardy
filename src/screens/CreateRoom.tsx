@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Input, Select, Button, Upload, Divider } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+import { TopicBackendModel } from '../models/Topic';
+import { httpService } from '../service/HttpService';
 
 const { Option } = Select;
 
@@ -53,6 +55,25 @@ const createRoomFormStyle = {
 }
 
 export default function CreateRoom() {
+
+  const [topics, setTopics] = useState<TopicBackendModel[]>(); 
+
+  //Initialization logic, getting topics. Consider storing globally once.
+  useEffect(() => {
+    setup()
+  }, [])
+
+  async function setup(){
+    console.log("Getting list of topics...");
+
+    //Make HTTP call with typed axios. Can be a service. Either use await or read the returned promise
+    let response: TopicBackendModel[] = await httpService.getTopicsList();
+    console.log("topics: ", response);
+
+    //Use topics to construct select? Or maybe just setTopics
+    setTopics(response);
+  }
+
   return (
     <div style={gridContainer}>
 
@@ -84,8 +105,11 @@ export default function CreateRoom() {
               onChange={() => {}}
               allowClear>
                 {/* Topics/files will be read in from the server. Can use JSX function to populate List[Options] */}
-                <Option value="topic1">Topic1</Option>
-                <Option value="topic2">Topic2</Option>
+                {/* <Option value="topic1">Topic1</Option>
+                <Option value="topic2">Topic2</Option> */}
+                {topics ? topics.forEach(element => {
+                  return <Option value={element.fileId}>${element.filename}</Option>
+                }) : <Option value="empty">Empty...</Option>}
             </Select>
           </Form.Item>
 
