@@ -104,12 +104,12 @@ export default function CreateRoom() {
               placeholder="Choose topic"
               onChange={() => {}}
               allowClear>
-                {/* Topics/files will be read in from the server. Can use JSX function to populate List[Options] */}
-                {/* <Option value="topic1">Topic1</Option>
-                <Option value="topic2">Topic2</Option> */}
-                {topics ? topics.forEach(element => {
-                  return <Option value={element.fileId}>${element.filename}</Option>
-                }) : <Option value="empty">Empty...</Option>}
+                {topics ? 
+                  topics.map(item => {
+                    return <Option value={item.fileId} key={item.fileId}>{item.topic}</Option>
+                  }) 
+                  : 
+                  <Option value="empty">Loading...</Option>}
             </Select>
           </Form.Item>
 
