@@ -19,6 +19,10 @@ const tailLayout = {
 
 const onFinish = (values: any) => {
   console.log('Success:', values);
+
+  //Send request to create a room
+
+  //Move into room screen - auto "join"
 };
 
 const onFinishFailed = (errorInfo: any) => {
