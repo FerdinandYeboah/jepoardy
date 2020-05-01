@@ -3,6 +3,8 @@ import { Form, Input, Select, Button, Upload, Divider } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { TopicBackendModel } from '../models/Topic';
 import { httpService } from '../service/HttpService';
+import { RoomCreated } from '../models/Events';
+import { useGlobalContext } from '../context/globalContext';
 
 const { Option } = Select;
 
@@ -15,18 +17,6 @@ const layout = {
 
 const tailLayout = {
   wrapperCol: { offset: 8, span: 16 },
-};
-
-const onFinish = (values: any) => {
-  console.log('Success:', values);
-
-  //Send request to create a room
-
-  //Move into room screen - auto "join"
-};
-
-const onFinishFailed = (errorInfo: any) => {
-  console.log('Failed:', errorInfo);
 };
 
 // Styles
@@ -60,6 +50,8 @@ const createRoomFormStyle = {
 
 export default function CreateRoom() {
 
+  let { socket } = useGlobalContext(); 
+
   const [topics, setTopics] = useState<TopicBackendModel[]>(); 
 
   //Initialization logic, getting topics. Consider storing globally once.
@@ -74,9 +66,28 @@ export default function CreateRoom() {
     let response: TopicBackendModel[] = await httpService.getTopicsList();
     console.log("topics: ", response);
 
-    //Use topics to construct select? Or maybe just setTopics
+    //Use topics to construct select? Or maybe just set topics and read in select
     setTopics(response);
   }
+
+  const onFinish = (values: any) => {
+    console.log('Success:', values);
+  
+    //Send request to create a room
+    let room: RoomCreated = {
+      roomName: values.roomName,
+      fileId: values.topic
+    }
+  
+    socket.emit("roomCreated", room);
+  
+    //Move into room screen - auto "join"
+  
+  };
+  
+  const onFinishFailed = (errorInfo: any) => {
+    console.log('Failed:', errorInfo);
+  };
 
   return (
     <div style={gridContainer}>
