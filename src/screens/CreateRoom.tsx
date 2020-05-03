@@ -5,6 +5,7 @@ import { TopicBackendModel } from '../models/Topic';
 import { httpService } from '../service/HttpService';
 import { RoomCreated } from '../models/Events';
 import { useGlobalContext } from '../context/globalContext';
+import { Redirect } from 'react-router';
 
 const { Option } = Select;
 
@@ -53,6 +54,7 @@ export default function CreateRoom() {
   let { socket } = useGlobalContext(); 
 
   const [topics, setTopics] = useState<TopicBackendModel[]>(); 
+  const [redirectToLobby, setRedirectToLobby] = useState<Boolean>(); 
 
   //Initialization logic, getting topics. Consider storing globally once.
   useEffect(() => {
@@ -88,6 +90,15 @@ export default function CreateRoom() {
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
   };
+
+  function goBackToLobby(){
+    console.log("Clicked go back to lobby")
+    setRedirectToLobby(true);
+  }
+
+  if (redirectToLobby){
+    return <Redirect to={"/lobby"}/>
+  }
 
   return (
     <div style={gridContainer}>
@@ -132,7 +143,7 @@ export default function CreateRoom() {
 
 
           <Form.Item {...tailLayout}>
-            <Button type="default">
+            <Button type="default" onClick={goBackToLobby}>
               Back
             </Button>
 

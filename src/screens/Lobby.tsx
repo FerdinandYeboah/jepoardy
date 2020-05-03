@@ -117,31 +117,8 @@ const createRoomButtonStyle = {
 
 export default function Lobby() {
 
-  const { socket } = useGlobalContext();
-  const [rooms, setRooms] = useState<RoomFrontendModel[]>();
+  const { socket, rooms } = useGlobalContext(); //rooms: RoomFrontendModel[]
   const [redirectToCreateRoom, setRedirectToCreateRoom] = useState<Boolean>();
-
-  //Initialization logic, get list of rooms
-  useEffect(() => {
-    setup()
-  }, [])
-
-  function setup(){
-    console.log("Getting list of rooms...");
-
-    //Get list of rooms, need to emit and on an event?
-    socket.on("roomListResponse", setRoomList)
-
-    socket.emit("roomListRequested")
-  }
-
-  function setRoomList(data: RoomBackendModel[]){
-    console.log("Received roomListResponse: ", data)
-    
-    //Set the rooms state object
-    console.log("Converted frontend room models: ", convertRoomModelListBE2FE(data));
-    setRooms(convertRoomModelListBE2FE(data))
-  }
 
   function openCreateRoom(){
     console.log("Clicked create room")
