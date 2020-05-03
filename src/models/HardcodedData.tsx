@@ -2,6 +2,30 @@ export const lobbyListColumns = [
 
 ]
 
+const tempData = [
+    {
+      key: 1,
+      name: 'Ferdinand\'s room',
+      numPlayers: 5,
+      topic: "New Testament",
+      status: "In Game",
+    },
+    {
+      key: 2,
+      name: 'The Way',
+      numPlayers: 5,
+      topic: "New Testament",
+      status: "In Game",
+    },
+    {
+      key: 3,
+      name: 'LezzGo',
+      numPlayers: 3,
+      topic: "The Torah",
+      status: "In Lobby",
+    }
+  ];
+
 export const hardcodedScoreBoardColumns = [
     {
         title: 'Ferdinand',

@@ -1,82 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, MouseEvent } from 'react';
 
 import { Table, Button } from 'antd';
 import { useGlobalContext } from '../context/globalContext';
 import { RoomFrontendModel, RoomBackendModel, convertRoomModelListBE2FE, State } from '../models/Room';
 import { Redirect } from 'react-router';
 
-const columns = [
-  {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
-  },
-  {
-    title: 'Players',
-    dataIndex: 'numPlayers',
-    key: 'numPlayers',
-  },
-  {
-    title: 'Topic',
-    dataIndex: 'topic',
-    key: 'topic',
-  },
-  {
-    title: 'Status',
-    dataIndex: 'status',
-    key: 'status',
-    render: function(text: any, record: RoomFrontendModel, index: any){
-      switch(record.status) {
-        case State.GAME:
-          return "In Game"
-          break;
-        case State.LOBBY:
-          return "In Lobby"
-          break;
-      }
-    }
-  },
-  {
-    title: 'Action',
-    render: function(text: any, record: RoomFrontendModel, index: any){
-      // console.log("Text: ", text, "Record: ", record, "Index: ", index)
-      if (record.status === State.GAME){
-        return (
-          <Button>Spectate</Button>
-        )
-      }
-      else if (record.status === State.LOBBY) {
-        return (
-          <Button type="primary">Join</Button>
-        )
-      }
-    }
-  }
-];
-
-const tempData = [
-  {
-    key: 1,
-    name: 'Ferdinand\'s room',
-    numPlayers: 5,
-    topic: "New Testament",
-    status: "In Game",
-  },
-  {
-    key: 2,
-    name: 'The Way',
-    numPlayers: 5,
-    topic: "New Testament",
-    status: "In Game",
-  },
-  {
-    key: 3,
-    name: 'LezzGo',
-    numPlayers: 3,
-    topic: "The Torah",
-    status: "In Lobby",
-  }
-];
 
 // Styles
 const gridContainer = {
@@ -128,6 +56,67 @@ export default function Lobby() {
   if (redirectToCreateRoom){
     return <Redirect to={"/create-room"}/>
   }
+
+  function spectateGame(){
+    console.log("Spectating games not implemented yet...")
+  }
+
+  function joinGame(room: RoomFrontendModel, event: MouseEvent<HTMLButtonElement>){
+    console.log("Joining game waiting room...")
+    console.log("Event: ", event)
+
+    console.log("Game: ", room)
+
+  }
+
+  const columns = [
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: 'Players',
+      dataIndex: 'numPlayers',
+      key: 'numPlayers',
+    },
+    {
+      title: 'Topic',
+      dataIndex: 'topic',
+      key: 'topic',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: function(text: any, record: RoomFrontendModel, index: any){
+        switch(record.status) {
+          case State.GAME:
+            return "In Game"
+            break;
+          case State.LOBBY:
+            return "In Lobby"
+            break;
+        }
+      }
+    },
+    {
+      title: 'Action',
+      render: function(text: any, record: RoomFrontendModel, index: any){
+        // console.log("Text: ", text, "Record: ", record, "Index: ", index)
+        if (record.status === State.GAME){
+          return (
+            <Button onClick={spectateGame}>Spectate</Button>
+          )
+        }
+        else if (record.status === State.LOBBY) {
+          return (
+            <Button type="primary" onClick={joinGame.bind(joinGame, record)}>Join</Button>
+          )
+        }
+      }
+    }
+  ];
 
   return (
     <div style={gridContainer}>
