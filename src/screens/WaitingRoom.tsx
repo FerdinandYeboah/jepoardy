@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Button, Divider } from "antd";
 
 import { CheckCircleOutlined, LoadingOutlined } from '@ant-design/icons'
+import { RoomFrontendModel, Player } from '../models/Room';
+import { RouterProps, RouteComponentProps } from 'react-router';
+import { useGlobalContext } from '../context/globalContext';
+import { UserJoinedGame } from '../models/Events';
 
 // Styles
 const gridContainer = {
@@ -36,7 +40,37 @@ const waitingRoomStyle = {
 };
 
 
-export default function WaitingRoom() {
+export default function WaitingRoom(routerState: RouteComponentProps) {
+  const { socket } = useGlobalContext();
+  const [room, setRoom] = useState<RoomFrontendModel>();
+
+  //Initialization logic
+  useEffect(function(){
+    setUp();
+  }, [])
+
+  function setUp(){
+    //Hard cast since I expect this type
+    const passedRoom: RoomFrontendModel = routerState.location.state as RoomFrontendModel
+    console.log("Room: ", passedRoom);
+
+    setRoom(passedRoom);
+
+    let joinedEvent: UserJoinedGame = {
+      gameId: passedRoom.id
+    }
+
+    //Emit event to add player to game
+    socket.emit("userJoinedGame", joinedEvent)
+
+    //Set up socket listeners for new players joining, leaving, etc... Emitted for all players in this game
+    socket.on("userListUpdated", updateUserList)
+  }
+
+  function updateUserList(users: Player[]){ //Will pass all users in game.
+    console.log("Users: ", users);
+  }
+
   return (
     <div style={gridContainer}>
 
@@ -44,8 +78,8 @@ export default function WaitingRoom() {
     <h1 style={headerStyle}> [X]'s Room </h1>
 
     <div style={waitingRoomStyle}>
-      <Player name="Ferdinand" ready={true}></Player>
-      <Player name="Michael" ready={false}></Player>
+      <PlayerComponent name="Ferdinand" ready={true}></PlayerComponent>
+      <PlayerComponent name="Michael" ready={false}></PlayerComponent>
 
 
       <br/><br/><br/>
@@ -65,7 +99,7 @@ export default function WaitingRoom() {
 }
 
 
-function Player(props: any){
+function PlayerComponent(props: any){
   const name: String = props.name
   const ready: Boolean = props.ready
 

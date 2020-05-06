@@ -6,6 +6,7 @@ import { httpService } from '../service/HttpService';
 import { RoomCreated } from '../models/Events';
 import { useGlobalContext } from '../context/globalContext';
 import { Redirect } from 'react-router';
+import { RoomFrontendModel, RoomBackendModel, convertRoomModelBE2FE } from '../models/Room';
 
 const { Option } = Select;
 
@@ -54,7 +55,9 @@ export default function CreateRoom() {
   let { socket } = useGlobalContext(); 
 
   const [topics, setTopics] = useState<TopicBackendModel[]>(); 
+  const [room, setRoom] = useState<RoomFrontendModel>(); 
   const [redirectToLobby, setRedirectToLobby] = useState<Boolean>(); 
+  const [redirectToWaitingRoom, setRedirectToWaitingRoom] = useState<Boolean>(); 
 
   //Initialization logic, getting topics. Consider storing globally once.
   useEffect(() => {
@@ -70,6 +73,9 @@ export default function CreateRoom() {
 
     //Use topics to construct select? Or maybe just set topics and read in select
     setTopics(response);
+
+    //Set up listener for created room response
+    socket.on("createdRoomResponse", autoJoinRoom)
   }
 
   const onFinish = (values: any) => {
@@ -83,18 +89,31 @@ export default function CreateRoom() {
   
     socket.emit("roomCreated", room);
   
-    //Move into room screen - auto "join"
-  
   };
   
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
   };
 
+  function autoJoinRoom(room: RoomBackendModel){
+    //Move into room screen - auto "join" - Set redirect
+    setRoom(convertRoomModelBE2FE(room, room.id));
+    setRedirectToWaitingRoom(true);
+  }
+
   function goBackToLobby(){
     console.log("Clicked go back to lobby")
     setRedirectToLobby(true);
   }
+
+  if (redirectToWaitingRoom && room !== undefined){
+    return <Redirect to={{
+      pathname: "/waiting-room",
+      state: {
+        ...room
+      } //Could alternatively use query params instead
+    }}/>
+}
 
   if (redirectToLobby){
     return <Redirect to={"/lobby"}/>

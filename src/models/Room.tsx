@@ -9,6 +9,7 @@ export interface RoomBackendModel {
 
 export interface RoomFrontendModel {
     key: number
+    id: number
     name: String | undefined
     numPlayers: number | undefined
     topic: String | undefined
@@ -18,6 +19,7 @@ export interface RoomFrontendModel {
 export function convertRoomModelBE2FE (backendModel: RoomBackendModel, key: number): RoomFrontendModel {
     let frontendModel: RoomFrontendModel = {
         key: key,
+        id: backendModel.id,
         name: backendModel.name,
         numPlayers: backendModel.players.length,
         topic: backendModel.topic,
@@ -35,10 +37,10 @@ export function convertRoomModelListBE2FE (backendModels: RoomBackendModel[]): R
     return frontendModels;
 }
 
-interface Player {
+export interface Player {
     name: string;
     score: number;
-    socket: any;
+    id: string;
 }
 
 export enum State {

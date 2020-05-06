@@ -47,6 +47,8 @@ export default function Lobby() {
 
   const { socket, rooms } = useGlobalContext(); //rooms: RoomFrontendModel[]
   const [redirectToCreateRoom, setRedirectToCreateRoom] = useState<Boolean>();
+  const [redirectToWaitingRoom, setRedirectToWaitingRoom] = useState<Boolean>();
+  const [selectedRoom, setSelectedRoom] = useState<RoomFrontendModel>();
 
   function openCreateRoom(){
     console.log("Clicked create room")
@@ -62,11 +64,15 @@ export default function Lobby() {
   }
 
   function joinGame(room: RoomFrontendModel, event: MouseEvent<HTMLButtonElement>){
-    console.log("Joining game waiting room...")
-    console.log("Event: ", event)
-
+    console.log("Joining waiting room...")
     console.log("Game: ", room)
 
+    //Move to waiting room - where will join the game
+    setSelectedRoom(room);
+    setRedirectToWaitingRoom(true);
+
+    //Join the game on the backend - Will be done in setup of waiting screen
+    //socket.emit("joinGame", room.id)
   }
 
   const columns = [
@@ -117,6 +123,18 @@ export default function Lobby() {
       }
     }
   ];
+
+  if (redirectToWaitingRoom && selectedRoom !== undefined){
+      return <Redirect to={{
+        pathname: "/waiting-room",
+        state: {
+          ...selectedRoom
+          // room: selectedRoom, 
+          // gameId: selectedRoom.id,
+          // name: selectedRoom.name
+        } //Could alternatively use query params instead
+      }}/>
+  }
 
   return (
     <div style={gridContainer}>
