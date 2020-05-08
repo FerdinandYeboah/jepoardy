@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Divider } from "antd";
 
 import { CheckCircleOutlined, LoadingOutlined } from '@ant-design/icons'
-import { RoomFrontendModel, Player } from '../models/Room';
+import { RoomFrontendModel, Player, PlayerReadyStatus } from '../models/Room';
 import { RouterProps, RouteComponentProps } from 'react-router';
 import { useGlobalContext } from '../context/globalContext';
 import { UserJoinedGame } from '../models/Events';
@@ -43,6 +43,7 @@ const waitingRoomStyle = {
 export default function WaitingRoom(routerState: RouteComponentProps) {
   const { socket } = useGlobalContext();
   const [room, setRoom] = useState<RoomFrontendModel>();
+  const [users, setUsers] = useState<Player[]>();
 
   //Initialization logic
   useEffect(function(){
@@ -69,17 +70,28 @@ export default function WaitingRoom(routerState: RouteComponentProps) {
 
   function updateUserList(users: Player[]){ //Will pass all users in game.
     console.log("Users: ", users);
+    setUsers(users);
+  }
+
+  function readyUp(){
+    socket.emit("playerReadiedUp");
   }
 
   return (
     <div style={gridContainer}>
 
       {/* HEADING */}
-    <h1 style={headerStyle}> [X]'s Room </h1>
+    <h1 style={headerStyle}> {room ? room.name : "Room"} </h1>
 
     <div style={waitingRoomStyle}>
-      <PlayerComponent name="Ferdinand" ready={true}></PlayerComponent>
-      <PlayerComponent name="Michael" ready={false}></PlayerComponent>
+      {
+        users ?
+          users.map(user => {
+            return <PlayerComponent name={`${user.name}`} ready={user.status === PlayerReadyStatus.READY}></PlayerComponent>
+          })
+          :
+          "No players currently in room..."
+      }
 
 
       <br/><br/><br/>
@@ -89,7 +101,7 @@ export default function WaitingRoom(routerState: RouteComponentProps) {
 
       <Divider type="vertical" />
       
-      <Button type="primary">
+      <Button type="primary" onClick={readyUp}>
         READY
       </Button>
     </div>

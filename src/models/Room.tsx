@@ -41,9 +41,15 @@ export interface Player {
     name: string;
     score: number;
     id: string;
+    status: PlayerReadyStatus
 }
 
 export enum State {
     LOBBY,
     GAME
+}
+
+export enum PlayerReadyStatus {
+    READY,
+    WAITING
 }
