@@ -3,7 +3,7 @@ import { Form, Input, Select, Button, Upload, Divider } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { TopicBackendModel } from '../models/Topic';
 import { httpService } from '../service/HttpService';
-import { RoomCreated } from '../models/Events';
+import { RoomCreated, UserJoinedGame } from '../models/Events';
 import { useGlobalContext } from '../context/globalContext';
 import { Redirect } from 'react-router';
 import { RoomFrontendModel, RoomBackendModel, convertRoomModelBE2FE } from '../models/Room';
@@ -98,7 +98,21 @@ export default function CreateRoom() {
   function autoJoinRoom(room: RoomBackendModel){
     //Move into room screen - auto "join" - Set redirect
     setRoom(convertRoomModelBE2FE(room, room.id));
-    setRedirectToWaitingRoom(true);
+
+    let joinedEvent: UserJoinedGame = {
+      gameId: room.id
+    }
+
+    //Emit event to add player to game
+    socket.emit("userJoinedGame", joinedEvent, function(success: Boolean){
+      if (success){
+        //Move to waiting room - where will join the game
+        setRedirectToWaitingRoom(true);
+      }
+      else {
+        alert("Joining game failed. Please try again.")
+      } 
+    })
   }
 
   function goBackToLobby(){

@@ -62,8 +62,10 @@ export default function WaitingRoom(routerState: RouteComponentProps) {
       gameId: passedRoom.id
     }
 
-    //Emit event to add player to game
-    socket.emit("userJoinedGame", joinedEvent)
+    /*Hmm.. I see the difficulty that will not get an inital user list when joining. Could be passed in..
+      This actually resulted in a react warning that can't perform update on unmounted component,
+      still suprised it works and the initial user list is shown as opposed to when another user joins or leaves.
+    */
 
     //Set up socket listeners for new players joining, leaving, etc... Emitted for all players in this game
     socket.on("userListUpdated", updateUserList)

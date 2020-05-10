@@ -4,6 +4,7 @@ import { Table, Button } from 'antd';
 import { useGlobalContext } from '../context/globalContext';
 import { RoomFrontendModel, RoomBackendModel, convertRoomModelListBE2FE, State } from '../models/Room';
 import { Redirect } from 'react-router';
+import { UserJoinedGame } from '../models/Events';
 
 
 // Styles
@@ -69,10 +70,22 @@ export default function Lobby() {
 
     //Move to waiting room - where will join the game
     setSelectedRoom(room);
-    setRedirectToWaitingRoom(true);
 
-    //Join the game on the backend - Will be done in setup of waiting screen
-    //socket.emit("joinGame", room.id)
+    let joinedEvent: UserJoinedGame = {
+      gameId: room.id
+    }
+
+    //Emit event to add player to game
+    socket.emit("userJoinedGame", joinedEvent, function(success: Boolean){
+      if (success){
+        //Move to waiting room - where will join the game
+        setRedirectToWaitingRoom(true);
+      }
+      else {
+        alert("Joining game failed. Please try again.")
+      } 
+    })
+
   }
 
   const columns = [
@@ -99,10 +112,8 @@ export default function Lobby() {
         switch(record.status) {
           case State.GAME:
             return "In Game"
-            break;
           case State.LOBBY:
             return "In Lobby"
-            break;
         }
       }
     },
