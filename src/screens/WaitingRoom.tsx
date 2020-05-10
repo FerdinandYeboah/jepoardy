@@ -4,7 +4,7 @@ import { Button, Divider } from "antd";
 
 import { CheckCircleOutlined, LoadingOutlined } from '@ant-design/icons'
 import { RoomFrontendModel, Player, PlayerReadyStatus } from '../models/Room';
-import { RouterProps, RouteComponentProps } from 'react-router';
+import { RouterProps, RouteComponentProps, Redirect } from 'react-router';
 import { useGlobalContext } from '../context/globalContext';
 import { UserJoinedGame } from '../models/Events';
 
@@ -44,6 +44,7 @@ export default function WaitingRoom(routerState: RouteComponentProps) {
   const { socket } = useGlobalContext();
   const [room, setRoom] = useState<RoomFrontendModel>();
   const [users, setUsers] = useState<Player[]>();
+  const [redirectToLobby, setRedirectToLobby] = useState<Boolean>();
 
   //Initialization logic
   useEffect(function(){
@@ -77,6 +78,23 @@ export default function WaitingRoom(routerState: RouteComponentProps) {
     socket.emit("playerReadiedUp");
   }
 
+  function leaveRoom(){
+    socket.emit("playerLeftRoom", function(success: boolean){
+      if (success === true){
+        //Go back to lobby
+        setRedirectToLobby(true);
+      }
+      else {
+        //Alert player leaving failed so try again.
+        alert("Leaving failed. Please try again.")
+      }
+    });
+  }
+
+  if (redirectToLobby){
+    return <Redirect to={"/lobby"}/>
+  }
+
   return (
     <div style={gridContainer}>
 
@@ -95,7 +113,7 @@ export default function WaitingRoom(routerState: RouteComponentProps) {
 
 
       <br/><br/><br/>
-      <Button type="default">
+      <Button type="default" onClick={leaveRoom}>
         LEAVE
       </Button>
 
