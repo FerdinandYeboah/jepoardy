@@ -1,7 +1,12 @@
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, useState, useEffect } from 'react';
 import { Table } from 'antd';
 
 import { hardcodedScoreBoardColumns, hardcodedScoreBoardData, hardcodedGameBoardColumns, hardcodedGameBoardData } from '../models/HardcodedData'
+import { RouteComponentProps } from 'react-router';
+import { useGlobalContext } from '../context/globalContext';
+import { RoomFrontendModel, RoomBackendModel, Player } from '../models/Room';
+import { UserJoinedGame } from '../models/Events';
+import { ScoreBoardModel, convertRoomModelBE2ScoreBoard, GameBoardModel, convertRoomModelBE2GameBoard } from '../models/Game';
 
 // Styles
 const gridContainer = {
@@ -52,30 +57,49 @@ const gameBoardStyle = {
 } as CSSProperties
 
 
-export default function GameBoard() {
+export default function Game(routerState: RouteComponentProps) {
+  const { socket } = useGlobalContext();
+  const [game, setGame] = useState<RoomBackendModel>();
+
+  //Initialization logic
+  useEffect(function(){
+    setUp();
+  }, [])
+
+  function setUp(){
+    //Hard cast since I expect this type
+    const game: RoomBackendModel = routerState.location.state as RoomBackendModel
+
+    setGame(game);
+  }
+
   return (
     <div style={gridContainer}>
 
       <div style={scoreBoardStyle}>
-        <ScoreBoard></ScoreBoard>
+        <ScoreBoard {...convertRoomModelBE2ScoreBoard(game)}></ScoreBoard>
       </div>
 
 
       <div style={gameBoardStyle}>
-        <Table bordered pagination={false} columns={hardcodedGameBoardColumns} dataSource={hardcodedGameBoardData}/>
+        <GameBoard {...convertRoomModelBE2GameBoard(game)}></GameBoard>
       </div>
 
     </div>
   );
 }
 
-
-function ScoreBoard(props: any){
+function GameBoard(gameBoardModel: GameBoardModel){
 
   return (
-    // <div>
-    //   ScoreBoard
-    // </div>
-    <Table bordered={true} pagination={false} columns={hardcodedScoreBoardColumns} dataSource={hardcodedScoreBoardData}/>
+    <Table bordered pagination={false} columns={gameBoardModel.columns} dataSource={gameBoardModel.data}/>
+  )
+}
+
+
+function ScoreBoard(scoreBoardModel: ScoreBoardModel){
+
+  return (
+    <Table bordered={true} pagination={false} columns={scoreBoardModel.columns} dataSource={scoreBoardModel.data}/>
   )
 }

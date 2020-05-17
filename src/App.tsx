@@ -6,7 +6,7 @@ import Home from './screens/Home'
 import Lobby from './screens/Lobby'
 import CreateRoom from './screens/CreateRoom'
 import WaitingRoom from './screens/WaitingRoom'
-import GameBoard from './screens/GameBoard'
+import Game from './screens/Game'
 import UpcomingQuestion from './components/game/UpcomingQuestion'
 import { defaultUpcoming } from './models/UpcomingQuestionModel'
 import GameQuestion from './components/game/GameQuestion'
@@ -25,7 +25,7 @@ export default function App(){
           <Route exact path="/lobby" component={Lobby} />
           <Route exact path="/create-room" component={CreateRoom} />
           <Route exact path="/waiting-room" component={WaitingRoom} />
-          <Route exact path="/game-board" component={GameBoard} />
+          <Route exact path="/game-board" component={Game} />
 
 
           {/* TESTING COMPONENTS that later may not have own routes */}

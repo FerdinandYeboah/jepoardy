@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Divider } from "antd";
 
 import { CheckCircleOutlined, LoadingOutlined } from '@ant-design/icons'
-import { RoomFrontendModel, Player, PlayerReadyStatus } from '../models/Room';
+import { RoomFrontendModel, Player, PlayerReadyStatus, RoomBackendModel } from '../models/Room';
 import { RouterProps, RouteComponentProps, Redirect } from 'react-router';
 import { useGlobalContext } from '../context/globalContext';
 import { UserJoinedGame } from '../models/Events';
@@ -43,8 +43,10 @@ const waitingRoomStyle = {
 export default function WaitingRoom(routerState: RouteComponentProps) {
   const { socket } = useGlobalContext();
   const [room, setRoom] = useState<RoomFrontendModel>();
+  const [game, setGame] = useState<RoomBackendModel>();
   const [users, setUsers] = useState<Player[]>();
   const [redirectToLobby, setRedirectToLobby] = useState<Boolean>();
+  const [redirectToGame, setRedirectToGame] = useState<Boolean>();
 
   //Initialization logic
   useEffect(function(){
@@ -69,6 +71,8 @@ export default function WaitingRoom(routerState: RouteComponentProps) {
 
     //Set up socket listeners for new players joining, leaving, etc... Emitted for all players in this game
     socket.on("userListUpdated", updateUserList)
+
+    socket.on("startGame", startGame)
   }
 
   function updateUserList(users: Player[]){ //Will pass all users in game.
@@ -93,8 +97,28 @@ export default function WaitingRoom(routerState: RouteComponentProps) {
     });
   }
 
+  function startGame(){
+    /*Get full game data and navigate to game board screen*/
+
+    //Make api call to get the full game data - Could be socket endpoint too...
+    socket.emit("currentRoomRequested", function(game: RoomBackendModel){
+      setGame(game);
+      setRedirectToGame(true);
+    })
+    
+  }
+
   if (redirectToLobby){
     return <Redirect to={"/lobby"}/>
+  }
+
+  if (redirectToGame && game !== undefined){
+    return <Redirect to={{
+      pathname: "/game-board",
+      state: {
+        ...game
+      },
+    }}/>
   }
 
   return (

@@ -2,7 +2,7 @@ export interface RoomBackendModel {
     id: number;
     name: string | undefined;
     topic: string | undefined;
-    file: string | undefined;
+    file: File;
     players: Player[];
     state: State;
 }
@@ -52,4 +52,24 @@ export enum State {
 export enum PlayerReadyStatus {
     READY,
     WAITING
+}
+
+interface File {
+    id: number;
+    name: string | undefined;
+    questions: Question[];
+}
+
+export interface Question {
+    category: string;
+    value: string;
+    question: string;
+    answers: Answer;
+    correctAnswer: string;
+    hasBeenAnswered: Boolean;
+}
+
+interface Answer {
+    // This is syntax for when definining a hashmap type.
+    [key: string] : string;
 }
