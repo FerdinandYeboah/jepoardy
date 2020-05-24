@@ -49,11 +49,20 @@ export const hardcodedScoreBoardColumns = [
         title: 'Ferdinand',
         dataIndex: 'ferdinand',
         key: 'ferdinand',
-    },
+        //Rename to .tsx if want to use jsx...
+        // render: function(text: any, record: any, index: any){
+        //     return (
+        //         <a onClick={this.cellClicked}></a> //Use target within cellClicked to determine which clicked.
+        //     )
+        // }
+      },
     {
         title: 'Eugene',
         dataIndex: 'eugene',
         key: 'eugene',
+        onCell: (record: any) => ({
+            onClick() { alert(`Clicked ${record.name}`) },
+        }),
     }
 ];
 
@@ -61,8 +70,8 @@ export const hardcodedScoreBoardData = [
     // Each object represents a row
     {
         key: '1',
-        ferdinand: "$200",
-        eugene: "$300",
+        ferdinand: "$600",
+        eugene: "$400",
     }
 ];
 
@@ -163,7 +172,7 @@ export function convertRoomModelBE2GameBoard(room: RoomBackendModel | undefined)
     return gameBoard;
 }
 
-function reformatQuestionsByValue(questions: Question[]){
+export function reformatQuestionsByValue(questions: Question[]){
     let obj: any = {}
 
     //Reorder list by value
@@ -173,3 +182,16 @@ function reformatQuestionsByValue(questions: Question[]){
 
     return obj;
 }
+
+export function extractCategories(questions: Question[]): String[] {
+    let categoriesSeen: string[] = []
+
+    //Iterate through questions and add category if haven't seen before
+    questions.forEach((question) => {
+        if (!categoriesSeen.includes(question.category)){
+            categoriesSeen.push(question.category);
+        }
+    });
+
+    return categoriesSeen;
+} 
