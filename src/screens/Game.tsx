@@ -1,10 +1,10 @@
-import React, { CSSProperties, useState, useEffect } from 'react';
+import React, { CSSProperties, useState, useEffect, MouseEvent } from 'react';
 
 import { hardcodedScoreBoardColumns, hardcodedScoreBoardData, hardcodedGameBoardColumns, hardcodedGameBoardData } from '../models/HardcodedData'
 import { RouteComponentProps } from 'react-router';
 import { useGlobalContext } from '../context/globalContext';
-import { RoomFrontendModel, RoomBackendModel, Player, Question } from '../models/Room';
-import { UserJoinedGame } from '../models/Events';
+import { RoomFrontendModel, RoomBackendModel, Player, Question, State } from '../models/Room';
+import { UserJoinedGame, PlayerClickedGameCell } from '../models/Events';
 import { ScoreBoardModel, convertRoomModelBE2ScoreBoard, GameBoardModel, convertRoomModelBE2GameBoard, reformatQuestionsByValue, extractCategories } from '../models/Game';
 
 import Table from '@material-ui/core/Table';
@@ -15,6 +15,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
+
+import { v4 as uuidv4 } from 'uuid';
 
 // Styles
 const useStyles = makeStyles({
@@ -74,6 +76,56 @@ const gameBoardStyle = {
   // transform: "translate(-50%, -50%)"
 } as CSSProperties
 
+function renderQuestionScreen(question: Question){
+  console.log("Rendering question screen...")
+  masterRender(Screen.QUESTION, question, emptyGame);
+}
+
+function renderAwaitingQuestionScreen(){
+  //If I could make null a superclass this wouldn't look so bad. Or function overload, or nullGame()
+  masterRender(Screen.AWAITING_QUESTION, emptyQuestion, emptyGame);
+}
+
+function renderBoardScreen(game: RoomBackendModel){
+  masterRender(Screen.BOARD, emptyQuestion, game);
+}
+
+function masterRender(screen: Screen, question: Question, game: RoomBackendModel){
+  //Has all if statements to render. I believe I did something similar on stripe connect screen.
+  //Unless masterRender replaces some mounted node, I don't think this will work. Look into any react .replace node methods though.
+  if (screen === Screen.QUESTION){
+    // Nothing shows up here.... even when called, oops
+    console.log("Showing question screen...")
+    return (
+      <h1>Question Screen</h1>
+    )
+  }
+}
+
+//In future - move these to hardcoded data file
+let emptyQuestion = {
+  category: "",
+  value: "",
+  question: "",
+  answers: {},
+  correctAnswer: "",
+  hasBeenAnswered: false
+}
+
+let emptyGame = {
+  id: 1,
+  name: "",
+  topic: "",
+  file: {id: 1, name: "", questions: []},
+  players: [],
+  state: State.LOBBY
+}
+
+enum Screen {
+  QUESTION,
+  AWAITING_QUESTION,
+  BOARD
+}
 
 export default function Game(routerState: RouteComponentProps) {
   const { socket } = useGlobalContext();
@@ -89,6 +141,9 @@ export default function Game(routerState: RouteComponentProps) {
     const game: RoomBackendModel = routerState.location.state as RoomBackendModel
 
     setGame(game);
+
+    //TODO: Add listener for moving to question screen
+    socket.on("showQuestion", renderQuestionScreen)
   }
 
   if (!game){
@@ -112,6 +167,25 @@ export default function Game(routerState: RouteComponentProps) {
 }
 
 function GameBoard(questions: Question[]){
+  const { socket } = useGlobalContext();
+
+  //Functions
+  function clickedGameCell(category: string, value: string, event: MouseEvent<HTMLTableDataCellElement>){
+    console.log(`ClickedGameCell: ${category} ${value}`)
+  
+    //Emit clicked question
+    let clickCellEvent: PlayerClickedGameCell = {
+      category: category,
+      value: value
+    }
+  
+    socket.emit("playerClickedGameCell", clickCellEvent)
+  
+    /*Add disabled class to specific game cell (e.target?) - NVM instead of doing it here.. 
+    do it on the classes. Check if the question has been answered and then render */
+
+  }
+
   // Use material ui table
   const classes = useStyles();
 
@@ -131,7 +205,7 @@ function GameBoard(questions: Question[]){
           <TableRow>
             {
               categories.map((category) => {
-                return <TableCell className={classes.cell} align="center">{category}</TableCell>
+                return <TableCell key={uuidv4()} className={classes.cell} align="center">{category}</TableCell>
               })
             }
           </TableRow>
@@ -139,10 +213,10 @@ function GameBoard(questions: Question[]){
         <TableBody>
           {
             Object.keys(valueIndexedQuestions).map((amountKey) => (
-              <TableRow>
+              <TableRow key={uuidv4()}>
                 {
                   valueIndexedQuestions[amountKey].map((item: any) => {
-                    return <TableCell className={classes.cell} align="center">${item.value}</TableCell>
+                    return <TableCell key={uuidv4()} className={classes.cell} align="center" onClick={clickedGameCell.bind(clickedGameCell, item.category, item.value)}>${item.value}</TableCell>
                   })
                 }
               </TableRow>
@@ -169,7 +243,7 @@ function ScoreBoard(players: Player[]){
           <TableRow>
             {
               players.map((player: Player, index: number) => (
-                  <TableCell className={classes.cell} align="center">{player.name}</TableCell>
+                  <TableCell key={uuidv4()} className={classes.cell} align="center">{player.name}</TableCell>
               ))
             }
           </TableRow>
@@ -177,7 +251,7 @@ function ScoreBoard(players: Player[]){
         <TableBody>
             {
               players.map((player: Player, index: number) => (
-                  <TableCell className={classes.cell} align="center">${player.score}</TableCell>
+                  <TableCell key={uuidv4()} className={classes.cell} align="center">${player.score}</TableCell>
               ))
             }
         </TableBody>
