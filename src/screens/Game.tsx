@@ -17,6 +17,7 @@ import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { v4 as uuidv4 } from 'uuid';
+import UpcomingQuestion from '../components/game/UpcomingQuestion';
 
 // Styles
 const useStyles = makeStyles({
@@ -76,60 +77,11 @@ const gameBoardStyle = {
   // transform: "translate(-50%, -50%)"
 } as CSSProperties
 
-function renderQuestionScreen(question: Question){
-  console.log("Rendering question screen...")
-  masterRender(Screen.QUESTION, question, emptyGame);
-}
-
-function renderAwaitingQuestionScreen(){
-  //If I could make null a superclass this wouldn't look so bad. Or function overload, or nullGame()
-  masterRender(Screen.AWAITING_QUESTION, emptyQuestion, emptyGame);
-}
-
-function renderBoardScreen(game: RoomBackendModel){
-  masterRender(Screen.BOARD, emptyQuestion, game);
-}
-
-function masterRender(screen: Screen, question: Question, game: RoomBackendModel){
-  //Has all if statements to render. I believe I did something similar on stripe connect screen.
-  //Unless masterRender replaces some mounted node, I don't think this will work. Look into any react .replace node methods though.
-  if (screen === Screen.QUESTION){
-    // Nothing shows up here.... even when called, oops
-    console.log("Showing question screen...")
-    return (
-      <h1>Question Screen</h1>
-    )
-  }
-}
-
-//In future - move these to hardcoded data file
-let emptyQuestion = {
-  category: "",
-  value: "",
-  question: "",
-  answers: {},
-  correctAnswer: "",
-  hasBeenAnswered: false
-}
-
-let emptyGame = {
-  id: 1,
-  name: "",
-  topic: "",
-  file: {id: 1, name: "", questions: []},
-  players: [],
-  state: State.LOBBY
-}
-
-enum Screen {
-  QUESTION,
-  AWAITING_QUESTION,
-  BOARD
-}
 
 export default function Game(routerState: RouteComponentProps) {
   const { socket } = useGlobalContext();
   const [game, setGame] = useState<RoomBackendModel>();
+  const [screen, setScreen] = useState<React.ReactNode>(<h1>Loading...</h1>); //Could look into typing further. Ex: <BoardScreen> | <AwaitingQuestion> | <Question> 
 
   //Initialization logic
   useEffect(function(){
@@ -141,29 +93,60 @@ export default function Game(routerState: RouteComponentProps) {
     const game: RoomBackendModel = routerState.location.state as RoomBackendModel
 
     setGame(game);
+    setScreen(<BoardScreen players={game.players} questions={game.file.questions}></BoardScreen>)
 
-    //TODO: Add listener for moving to question screen
+    //Add listener for moving to question screen - All transition listeners here? Or on component that will click from? 
     socket.on("showQuestion", renderQuestionScreen)
   }
+
+  //Screens
+  function renderQuestionScreen(question: Question){
+    console.log("Rendering question screen...")
+
+    let questionScreen = <UpcomingQuestion category={question.category} value={parseInt(question.value)}/>
+    
+    setScreen(questionScreen);
+    
+  }
+
 
   if (!game){
     return <h1>Loading..</h1>;
   }
 
   return (
+    // eslint-disable-next-line no-restricted-globals
+    <div>
+      {screen}
+    </div>
+  )
+
+}
+
+type BoardProps = {
+  players: Player[], 
+  questions: Question[]
+};
+
+function BoardScreen(props: BoardProps){
+
+  const { players, questions } = props;
+
+  return (
     <div style={gridContainer}>
 
       <div style={scoreBoardStyle}>
-        <ScoreBoard {...game.players}></ScoreBoard>
+        <ScoreBoard {...players}></ScoreBoard>
       </div>
 
 
       <div style={gameBoardStyle}>
-        <GameBoard {...game.file.questions}></GameBoard>
+        <GameBoard {...questions}></GameBoard>
       </div>
 
     </div>
   );
+
 }
 
 function GameBoard(questions: Question[]){
@@ -192,10 +175,10 @@ function GameBoard(questions: Question[]){
   //For some strange reason when passed in questions becomes an object, not an array. Change it back.
   questions = Object.values(questions);
 
-  //Get unique list of categories - Future: Sort alphabetically, needed to ensure correct mappings.
+  //Get unique list of categories - TODO Future: Sort alphabetically, needed to ensure correct mappings.
   let categories: String[] = extractCategories(questions)
 
-  //Reformat questions to be by value - Future: Sort alphabetically, needed to ensure correct mappings.
+  //Reformat questions to be by value - TODO Future: Sort alphabetically, needed to ensure correct mappings.
   let valueIndexedQuestions = reformatQuestionsByValue(questions)
 
   return (
@@ -259,27 +242,3 @@ function ScoreBoard(players: Player[]){
     </TableContainer>
   );
 }
-
-//AntDVersions - Keeping around for now, will remove later
-// function GameBoardDeprecated(gameBoardModel: GameBoardModel){
-
-//   return (
-//     <Table
-//       onRow={
-//         (record: any) => {
-//           return {
-//             onClick: (event: any) => { console.log("on row: ", record)}
-//           }
-//         }
-//       } 
-//       bordered pagination={false} columns={gameBoardModel.columns} dataSource={gameBoardModel.data}/>
-//   )
-// }
-
-
-// function ScoreBoardDeprecated(scoreBoardModel: ScoreBoardModel){
-
-//   return (
-//     <Table bordered={true} pagination={false} columns={scoreBoardModel.columns} dataSource={scoreBoardModel.data}/>
-//   )
-// }
