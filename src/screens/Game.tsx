@@ -18,6 +18,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import { v4 as uuidv4 } from 'uuid';
 import UpcomingQuestion from '../components/game/UpcomingQuestion';
+import GameQuestion from '../components/game/GameQuestion';
 
 // Styles
 const useStyles = makeStyles({
@@ -96,16 +97,24 @@ export default function Game(routerState: RouteComponentProps) {
     setScreen(<BoardScreen players={game.players} questions={game.file.questions}></BoardScreen>)
 
     //Add listener for moving to question screen - All transition listeners here? Or on component that will click from? 
-    socket.on("showQuestion", renderQuestionScreen)
+    socket.on("showUpcomingQuestion", renderUpcomingQuestionScreen)
+    socket.on("askQuestion", renderQuestionScreen)
   }
 
   //Screens
-  function renderQuestionScreen(question: Question){
-    console.log("Rendering question screen...")
+  function renderUpcomingQuestionScreen(question: Question){
+    console.log("Rendering upcoming question screen...")
 
     let questionScreen = <UpcomingQuestion category={question.category} value={parseInt(question.value)}/>
     
     setScreen(questionScreen);
+    
+  }
+
+  function renderQuestionScreen(question: Question){
+    console.log("Rendering question screen...")
+
+    setScreen(<GameQuestion question={question.question} answers={question.answers}/>);
     
   }
 
@@ -123,6 +132,7 @@ export default function Game(routerState: RouteComponentProps) {
 
 }
 
+//Could subcomponents below go into a different file or need in same file for global game state?
 type BoardProps = {
   players: Player[], 
   questions: Question[]

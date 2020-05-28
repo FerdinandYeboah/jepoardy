@@ -1,6 +1,8 @@
 import React, { CSSProperties } from 'react';
 import { GameQuestionModel } from '../../models/GameQuestionModel';
 
+import { v4 as uuidv4 } from 'uuid';
+
 // Styles
 const flexContainer = {
   width: "80VW",
@@ -35,17 +37,22 @@ export default function GameQuestion(gameQuestionModel: GameQuestionModel) {
   
   // Should time be a configurable property? Not sure yet, wait till implementation details.
 
+  // Have an internal mapping between numbers and letters?
+
   return (
     <div style={flexContainer}>
 
       <div style={answersFlexContainer}>
         <h1>{question}</h1>
-
+  
         <ol>
-          {answers.map((answer) => {
-            return <li>{answer}</li>
-          })}
+          {
+            Object.keys(answers).map((letterChoice) => (
+            <li key={uuidv4()}>{answers[letterChoice]}</li>
+            ))
+          }
         </ol>
+        
       </div>
 
     </div>
