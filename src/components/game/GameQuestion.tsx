@@ -5,18 +5,10 @@ import { v4 as uuidv4 } from 'uuid';
 
 // Styles
 const flexContainer = {
-  width: "80VW",
-  maxWidth: "700px",
-  // above makes 800px fixed but then 80VW if goes screen size goes under 800px.",
-  // textAlign: "center",
-  // verticalAlign: 
-  height: "80VH",
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
+  height: "inherit",
+  width: "inherit",
   border: "1px solid black",
-  // Use flex for this container
+  // // Use flex for this container
   display: "flex",
   flexDirection: "column",
   alignItems: "center",

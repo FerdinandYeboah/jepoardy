@@ -37,12 +37,13 @@ const gridContainer = {
   // above makes 800px fixed but then 80VW if goes screen size goes under 800px.",
   height: "80VH",
   display: "grid",
-  gridTemplateAreas: 
-  `
-      "scoreboard scoreboard scoreboard scoreboard"
-      "gameboard  gameboard  gameboard  gameboard"
-      "gameboard  gameboard  gameboard  gameboard"
-  `,
+  // gridTemplateAreas: 
+  // `
+  //     "scoreboard scoreboard scoreboard scoreboard"
+  //     "gameboard  gameboard  gameboard  gameboard"
+  //     "gameboard  gameboard  gameboard  gameboard"
+  // `,
+  gridTemplateRows: "1fr 3fr", //1st item 25% row height 2nd 75% row height.
   // margin: "auto", //This centers horizontally and seems to center children too.
   // border: "3px solid blue",
   // Below centers both 
@@ -53,7 +54,7 @@ const gridContainer = {
 } as CSSProperties
 
 const scoreBoardStyle = {
-  gridArea: "scoreboard",
+  // gridArea: "scoreboard",
   // border: "3px solid black",
   // justifySelf: "center",
   // alignSelf: "center"
@@ -66,8 +67,13 @@ const scoreBoardStyle = {
 
 } as CSSProperties
 
+const innerComponentStyle = {
+  // maxHeight: "40VH", //If want to limit question box height.
+  height: "30VH",
+} as CSSProperties
+
 const gameBoardStyle = {
-  gridArea: "gameboard",
+  // gridArea: "gameboard",
   // border: "3px solid black",
   // width: "50%",
   // justifySelf: "center",
@@ -125,8 +131,14 @@ export default function Game(routerState: RouteComponentProps) {
 
   return (
     // eslint-disable-next-line no-restricted-globals
-    <div>
-      {screen}
+    <div style={gridContainer}>
+      <div style={scoreBoardStyle}>
+        <ScoreBoard {...game.players}></ScoreBoard>
+      </div>
+
+      <div style={innerComponentStyle}>
+        {screen}
+      </div>
     </div>
   )
 
@@ -143,17 +155,8 @@ function BoardScreen(props: BoardProps){
   const { players, questions } = props;
 
   return (
-    <div style={gridContainer}>
-
-      <div style={scoreBoardStyle}>
-        <ScoreBoard {...players}></ScoreBoard>
-      </div>
-
-
-      <div style={gameBoardStyle}>
-        <GameBoard {...questions}></GameBoard>
-      </div>
-
+    <div style={gameBoardStyle}>
+      <GameBoard {...questions}></GameBoard>
     </div>
   );
 
