@@ -20,7 +20,7 @@ export function GlobalContextProvider({children}) {
         console.log("Called useEffect");
         
         //Connect socket
-        const socket = io("http://localhost:3001");
+        const socket = io(`http://${window.location.hostname}:3001`);
         setSocket(socket);
         console.log("Client socket: ", socket);
 

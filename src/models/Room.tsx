@@ -4,6 +4,7 @@ export interface RoomBackendModel {
     topic: string | undefined;
     file: File;
     players: Player[];
+    controllingPlayerId: string;
     state: State;
 }
 

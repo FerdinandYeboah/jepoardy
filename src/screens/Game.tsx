@@ -19,6 +19,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { v4 as uuidv4 } from 'uuid';
 import UpcomingQuestion from '../components/game/UpcomingQuestion';
 import GameQuestion from '../components/game/GameQuestion';
+import { emitter } from '../utils/EventEmitter';
 
 // Styles
 const useStyles = makeStyles({
@@ -28,6 +29,14 @@ const useStyles = makeStyles({
   cell: {
     border: "1px solid black",
     borderCollapse: "collapse",
+  },
+  controller: {
+    backgroundColor: "slateblue"
+  },
+  blankCell: {
+    backgroundColor: "white",
+    color: "white",
+    cursor: "no-drop"
   }
 });
 
@@ -105,6 +114,27 @@ export default function Game(routerState: RouteComponentProps) {
     //Add listener for moving to question screen - All transition listeners here? Or on component that will click from? 
     socket.on("showUpcomingQuestion", renderUpcomingQuestionScreen)
     socket.on("askQuestion", renderQuestionScreen)
+    socket.on("showGameBoard", renderGameBoard)
+    socket.on("gameOver", handleGameOver)
+
+    //Add event emitter listeners. Seems possible to use addListeners and pass object to add multiple events to a listener.
+    emitter.addListener("playerAnsweredCorrectly", updateGame)
+    emitter.addListener("playerAnsweredIncorrectly", updateGame)
+    emitter.addListener("allPlayersAnsweredIncorrectly", updateGame)
+
+  }
+
+  function updateGame(game: RoomBackendModel){
+    console.log("Updating game with...: ", game)
+    setGame(game)
+  }
+
+  function handleGameOver(winners: Player[]){
+    let winnerNames = winners.map((winner: Player) => {
+      return winner.name
+    })
+    console.log("Winners: ", winners)
+    alert(`Game over. Winners: ${winnerNames.join(",")}`)
   }
 
   //Screens
@@ -124,6 +154,13 @@ export default function Game(routerState: RouteComponentProps) {
     
   }
 
+  function renderGameBoard(game: RoomBackendModel){
+    console.log("Rendering game board screen...")
+
+    setScreen(<BoardScreen players={game.players} questions={game.file.questions}></BoardScreen>);
+    
+  }
+
 
   if (!game){
     return <h1>Loading..</h1>;
@@ -133,7 +170,7 @@ export default function Game(routerState: RouteComponentProps) {
     // eslint-disable-next-line no-restricted-globals
     <div style={gridContainer}>
       <div style={scoreBoardStyle}>
-        <ScoreBoard {...game.players}></ScoreBoard>
+        <ScoreBoard players={game.players} controllingPlayerId={game.controllingPlayerId}></ScoreBoard>
       </div>
 
       <div style={innerComponentStyle}>
@@ -212,7 +249,8 @@ function GameBoard(questions: Question[]){
               <TableRow key={uuidv4()}>
                 {
                   valueIndexedQuestions[amountKey].map((item: any) => {
-                    return <TableCell key={uuidv4()} className={classes.cell} align="center" onClick={clickedGameCell.bind(clickedGameCell, item.category, item.value)}>${item.value}</TableCell>
+                    let classNm = item.hasBeenAnswered ? `${classes.cell} ${classes.blankCell}` : classes.cell;
+                    return <TableCell key={uuidv4()} className={classNm} align="center" onClick={clickedGameCell.bind(clickedGameCell, item.category, item.value)}>${item.value}</TableCell>
                   })
                 }
               </TableRow>
@@ -225,12 +263,20 @@ function GameBoard(questions: Question[]){
 }
 
 
-function ScoreBoard(players: Player[]){
+type ScoreBoardProps = {
+  players: Player[], 
+  controllingPlayerId: string
+};
+
+function ScoreBoard(props: ScoreBoardProps){
+
+  let { players, controllingPlayerId } = props;  
+
   // Use material ui table
   const classes = useStyles();
 
   //For some strange reason when passed in players becomes an object, not an array. Change it back.
-  players = Object.values(players);
+  // players = Object.values(players);
 
   return (
     <TableContainer component={Paper}>
@@ -238,9 +284,11 @@ function ScoreBoard(players: Player[]){
         <TableHead>
           <TableRow>
             {
-              players.map((player: Player, index: number) => (
-                  <TableCell key={uuidv4()} className={classes.cell} align="center">{player.name}</TableCell>
-              ))
+              players.map((player: Player, index: number) => {
+                  console.log("player.id: ", player.id, "controllerId: ", controllingPlayerId);
+                  let classNm = player.id === controllingPlayerId ? `${classes.cell} ${classes.controller}` : classes.cell;
+                  return <TableCell key={uuidv4()} className={ classNm } align="center">{player.name}</TableCell>
+              })
             }
           </TableRow>
         </TableHead>

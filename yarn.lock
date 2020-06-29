@@ -1570,6 +1570,13 @@
   resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-7.0.3.tgz#45cd03e98e758f8581c79c535afbd4fc27ba7ac8"
   integrity sha512-PUdqTZVrNYTNcIhLHkiaYzoOIaUi5LFg/XLerAdgvwQrUCx+oSbtoBze1AMyvYbcwzUSNC+Isl58SM4Sm/6COw==
 
+"@types/wolfy87-eventemitter@^5.2.0":
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/@types/wolfy87-eventemitter/-/wolfy87-eventemitter-5.2.0.tgz#0233f0af5d600d22b6a669be6006708e79712ef7"
+  integrity sha512-N1moqePknZH927suyuzL9rdGLMwc+Ls7VW5WNlmfG3Zv/ZZhCigPXWiBJ7wy1Up4JVQJTo+S1vCiqYIyQw/Lfw==
+  dependencies:
+    wolfy87-eventemitter "*"
+
 "@types/yargs-parser@*":
   version "15.0.0"
   resolved "https://registry.yarnpkg.com/@types/yargs-parser/-/yargs-parser-15.0.0.tgz#cb3f9f741869e20cce330ffbeb9271590483882d"
@@ -11431,6 +11438,11 @@ which@^2.0.1:
   integrity sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==
   dependencies:
     isexe "^2.0.0"
+
+wolfy87-eventemitter@*, wolfy87-eventemitter@^5.2.9:
+  version "5.2.9"
+  resolved "https://registry.yarnpkg.com/wolfy87-eventemitter/-/wolfy87-eventemitter-5.2.9.tgz#e879f770b30fbb6512a8afbb330c388591099c2a"
+  integrity sha512-P+6vtWyuDw+MB01X7UeF8TaHBvbCovf4HPEMF/SV7BdDc1SMTiBy13SRD71lQh4ExFTG1d/WNzDGDCyOKSMblw==
 
 word-wrap@~1.2.3:
   version "1.2.3"
