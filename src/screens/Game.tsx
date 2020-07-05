@@ -1,10 +1,10 @@
 import React, { CSSProperties, useState, useEffect, MouseEvent } from 'react';
 
 import { hardcodedScoreBoardColumns, hardcodedScoreBoardData, hardcodedGameBoardColumns, hardcodedGameBoardData } from '../models/HardcodedData'
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps, Redirect } from 'react-router';
 import { useGlobalContext } from '../context/globalContext';
 import { RoomFrontendModel, RoomBackendModel, Player, Question, State } from '../models/Room';
-import { UserJoinedGame, PlayerClickedGameCell } from '../models/Events';
+import { UserJoinedGame, PlayerClickedGameCell, GameOver } from '../models/Events';
 import { ScoreBoardModel, convertRoomModelBE2ScoreBoard, GameBoardModel, convertRoomModelBE2GameBoard, reformatQuestionsByValue, extractCategories } from '../models/Game';
 
 import Table from '@material-ui/core/Table';
@@ -20,6 +20,7 @@ import { v4 as uuidv4 } from 'uuid';
 import UpcomingQuestion from '../components/game/UpcomingQuestion';
 import GameQuestion from '../components/game/GameQuestion';
 import { emitter } from '../utils/EventEmitter';
+import { notification } from 'antd';
 
 // Styles
 const useStyles = makeStyles({
@@ -98,6 +99,9 @@ export default function Game(routerState: RouteComponentProps) {
   const { socket } = useGlobalContext();
   const [game, setGame] = useState<RoomBackendModel>();
   const [screen, setScreen] = useState<React.ReactNode>(<h1>Loading...</h1>); //Could look into typing further. Ex: <BoardScreen> | <AwaitingQuestion> | <Question> 
+  const [redirectToWaitingRoom, setRedirectToWaitingRoom] = useState<Boolean>();
+  const [newGame, setNewGame] = useState<RoomBackendModel>();
+
 
   //Initialization logic
   useEffect(function(){
@@ -123,19 +127,48 @@ export default function Game(routerState: RouteComponentProps) {
     emitter.addListener("allPlayersAnsweredIncorrectly", updateGame)
 
   }
+  
+  //Redirects
+  //If could imperatively (by command, not state) trigger redirect, then would not need newGame variable. 
+  //But react is designed to work declaratively (by state, will always resolve to end state)
+  if (redirectToWaitingRoom && newGame !== undefined){ 
+    return <Redirect to={{
+      pathname: "/waiting-room",
+      state: {
+        ...newGame
+      }
+    }}/>
+  }
 
   function updateGame(game: RoomBackendModel){
     console.log("Updating game with...: ", game)
     setGame(game)
   }
 
-  function handleGameOver(winners: Player[]){
+  function handleGameOver(gameOverResponse: GameOver){
+    let { game, winners } = gameOverResponse
+
     let winnerNames = winners.map((winner: Player) => {
       return winner.name
     })
-    console.log("Winners: ", winners)
-    alert(`Game over. Winners: ${winnerNames.join(",")}`)
+    console.log("Game over response: ", game)
+    openNotification("Game Over!", `The winners are ${winnerNames.join(",")}`)
+
+    //Redirect back to waiting room, race condition will be here if I don't ensure game variable gets updated first
+    setTimeout(() => {
+      setNewGame(game);
+      setRedirectToWaitingRoom(true);
+    }, 5000)
+    
   }
+
+  const openNotification = (title: string, description: string) => {
+    notification.open({
+      message: title,
+      description:
+        description,
+    });
+  };
 
   //Screens
   function renderUpcomingQuestionScreen(question: Question){

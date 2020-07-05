@@ -1,4 +1,4 @@
-import { RoomBackendModel } from "./Room"
+import { RoomBackendModel, Player } from "./Room"
 
 export type UserCreated = {
     name: string
@@ -38,5 +38,10 @@ export type PlayerAnsweredIncorrectly = {
 
 export type AllPlayerAnsweredIncorrectly = {
     correctAnswer: string,
+    game: RoomBackendModel
+}
+
+export type GameOver = {
+    winners: Player[],
     game: RoomBackendModel
 }
